@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'credit_card/Payment_Processing.dart';
-import 'credit_card/payment_successful.dart';
-import 'credit_card/add_new_card.dart';
-import 'credit_card/Credit_Card_Expired.dart';
+import 'screens/Payment_Processing.dart';
+import 'screens/payment_successful.dart';
+import 'screens/add_new_card.dart';
+import 'screens/Credit_Card_Expired.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key}); 
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Payment Dashboard"),
+        title: const Text("Dashboard"),
         centerTitle: true,
         elevation: 0,
       ),
