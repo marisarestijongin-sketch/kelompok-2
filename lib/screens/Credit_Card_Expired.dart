@@ -124,3 +124,4 @@ const cardExpiredIllustration = '''
 <circle cx="100" cy="100" r="80" fill="#E2E2E2"/>
 </svg>
 ''';
+
