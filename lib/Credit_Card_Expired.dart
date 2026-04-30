@@ -8,42 +8,110 @@ class CardExpiredScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Card Expired")),
+      appBar: AppBar(
+        title: const Text("Payment Problem"),
+        centerTitle: true,
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const Spacer(flex: 2),
+              const Spacer(),
 
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: SvgPicture.string(
-                    cardExpiredIllustration, // ✅ sudah benar
-                    fit: BoxFit.scaleDown,
+              /// 🔴 Illustration + Badge Warning
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.65,
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: SvgPicture.string(
+                        cardExpiredIllustration,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
+                  Positioned(
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 26, 166, 241),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.warning_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+
+              const SizedBox(height: 30),
+
+              /// 🔹 Title
+              Text(
+                "Card Expired",
+                style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+              ),
+
+              const SizedBox(height: 12),
+
+              /// 🔹 Description
+              const Text(
+                "Your card is no longer valid. Please update your payment method to continue.",
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 32),
+
+              /// 🔹 Primary Button
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AddNewCard(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text("Add New Card"),
                 ),
               ),
 
-              const Spacer(flex: 2),
+              const SizedBox(height: 12),
 
-              ErrorInfo(
-                title: "Card Expired!",
-                description:
-                    "Your card has expired. Please add a new card to continue.",
-                btnText: "Add New Card",
-                press: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AddNewCard(),
-                    ),
-                  );
-                },
+              /// 🔹 Secondary Button
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Back to Checkout"),
+                ),
               ),
+
+              const Spacer(),
             ],
           ),
         ),
@@ -51,54 +119,6 @@ class CardExpiredScreen extends StatelessWidget {
     );
   }
 }
-
-class ErrorInfo extends StatelessWidget {
-  const ErrorInfo({
-    super.key,
-    required this.title,
-    required this.description,
-    this.button,
-    this.btnText,
-    required this.press,
-  });
-
-  final String title;
-  final String description;
-  final Widget? button;
-  final String? btnText;
-  final VoidCallback press;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall!
-              .copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Text(description, textAlign: TextAlign.center),
-        const SizedBox(height: 40),
-
-        button ??
-            ElevatedButton(
-              onPressed: press,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 48),
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-              ),
-              child: Text(btnText ?? "Retry"),
-            ),
-      ],
-    );
-  }
-}
-
-// ✅ NAMA SUDAH BENAR (Illustration)
 const cardExpiredIllustration = '''
 <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
 <circle cx="100" cy="100" r="80" fill="#E2E2E2"/>

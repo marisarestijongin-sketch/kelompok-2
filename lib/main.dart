@@ -15,136 +15,193 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Payment App',
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.grey[100],
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  void navigate(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text("Payment Dashboard"),
+        centerTitle: true,
+        elevation: 0,
       ),
 
-      // ✅ DRAWER
+      /// 🔥 DRAWER UPGRADE
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.deepPurple),
-              child: Text(
-                'Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              color: Colors.deepPurple,
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white,
+                    child: Icon(Icons.person, size: 30),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Pengguna!",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  Text(
+                    "kelompok 2",
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                ],
               ),
             ),
 
-            // HOME
             ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
               onTap: () => Navigator.pop(context),
             ),
 
-            // PAYMENT PROCESSING
             ListTile(
               leading: const Icon(Icons.payment),
-              title: const Text('Payment Processing'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PaymentProcessingScreen(),
-                  ),
-                );
-              },
+              title: const Text('Processing'),
+              onTap: () => navigate(context, const PaymentProcessingScreen()),
             ),
 
-            // PAYMENT SUCCESS
             ListTile(
               leading: const Icon(Icons.check_circle),
-              title: const Text('Payment Success'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PaymentSuccessfulScreen(),
-                  ),
-                );
-              },
+              title: const Text('Success'),
+              onTap: () => navigate(context, const PaymentSuccessfulScreen()),
             ),
 
-            // ADD NEW CARD
             ListTile(
               leading: const Icon(Icons.credit_card),
-              title: const Text('Add New Card'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddNewCard(),
-                  ),
-                );
-              },
+              title: const Text('Add Card'),
+              onTap: () => navigate(context, const AddNewCard()),
             ),
 
-            // CARD EXPIRED
             ListTile(
               leading: const Icon(Icons.warning),
               title: const Text('Card Expired'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CardExpiredScreen(),
-                  ),
-                );
-              },
+              onTap: () => navigate(context, const CardExpiredScreen()),
             ),
           ],
         ),
       ),
 
-      // BODY
-      body: Center(
+      /// 🔥 BODY (Dashboard)
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Quick Actions",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+
+            /// 🔹 Grid Menu
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                children: [
+                  menuCard(
+                    context,
+                    icon: Icons.payment,
+                    title: "Processing",
+                    color: Colors.orange,
+                    onTap: () => navigate(
+                        context, const PaymentProcessingScreen()),
+                  ),
+                  menuCard(
+                    context,
+                    icon: Icons.check_circle,
+                    title: "Success",
+                    color: Colors.green,
+                    onTap: () => navigate(
+                        context, const PaymentSuccessfulScreen()),
+                  ),
+                  menuCard(
+                    context,
+                    icon: Icons.credit_card,
+                    title: "Add Card",
+                    color: Colors.blue,
+                    onTap: () => navigate(context, const AddNewCard()),
+                  ),
+                  menuCard(
+                    context,
+                    icon: Icons.warning,
+                    title: "Expired",
+                    color: Colors.red,
+                    onTap: () =>
+                        navigate(context, const CardExpiredScreen()),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 🔥 CARD MENU WIDGET
+  Widget menuCard(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required Color color,
+      required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('You have pushed the button this many times:'),
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: color.withOpacity(0.15),
+              child: Icon(icon, color: color, size: 28),
+            ),
+            const SizedBox(height: 12),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ],
         ),
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        child: const Icon(Icons.add),
       ),
     );
   }
