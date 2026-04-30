@@ -135,3 +135,4 @@ const paymentSuccessIllistration = '''
 <path d="M746.13 656.98L774 683.38L818.21 638.12" stroke="#0E0E0E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 ''';
+
