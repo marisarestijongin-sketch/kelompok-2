@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Payment App',
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.grey[100],
+        scaffoldBackgroundColor: const Color.fromARGB(255, 252, 244, 244),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -54,7 +54,7 @@ class MyHomePage extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
-              color: Colors.deepPurple,
+              color: const Color.fromARGB(255, 254, 254, 254),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -163,7 +163,7 @@ class MyHomePage extends StatelessWidget {
                     context,
                     icon: Icons.credit_card,
                     title: "Add Card",
-                    color: Colors.blue,
+                    color: const Color.fromARGB(255, 98, 175, 235),
                     onTap: () =>
                         navigate(context, const AddNewCard()),
                   ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +26,10 @@ class _AddNewCardState extends State<AddNewCard> {
 
   bool isLoading = true;
   bool isError = false;
+
+  /// 🔥 tambahan fitur
+  bool isCVVHidden = true;
+  bool showBack = false;
 
   @override
   void initState() {
@@ -54,9 +59,7 @@ class _AddNewCardState extends State<AddNewCard> {
             'https://api.ppb.widiarrohman.my.id/api/2026/uts/A/kelompok2/user/credit-card'),
       );
 
-      if (response.statusCode != 200) {
-        throw Exception("Server error");
-      }
+      if (response.statusCode != 200) throw Exception("Server error");
 
       final jsonData = json.decode(response.body);
 
@@ -73,7 +76,6 @@ class _AddNewCardState extends State<AddNewCard> {
           expiryController.text = data['valid'];
 
           cardType = detectCardType(data['number']);
-
           isLoading = false;
         });
       } else {
@@ -114,8 +116,20 @@ class _AddNewCardState extends State<AddNewCard> {
   /// ================= SUBMIT =================
   void submitCard() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Card Added Successfully")),
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(Icons.check_circle, color: Colors.green, size: 80),
+              SizedBox(height: 10),
+              Text("Card Added Successfully 🎉"),
+            ],
+          ),
+        ),
       );
     }
   }
@@ -135,7 +149,6 @@ class _AddNewCardState extends State<AddNewCard> {
   String maskCard(String number) {
     String cleaned = number.replaceAll(" ", "");
     if (cleaned.length < 8) return number;
-
     return cleaned.replaceRange(4, cleaned.length - 4, "**** ****");
   }
 
@@ -178,13 +191,8 @@ class _AddNewCardState extends State<AddNewCard> {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-
-                        /// CARD PREVIEW
                         buildCardPreview(),
-
                         const SizedBox(height: 30),
-
-                        /// FORM
                         buildForm(),
                       ],
                     ),
@@ -193,31 +201,57 @@ class _AddNewCardState extends State<AddNewCard> {
     );
   }
 
+  /// ================= CARD PREVIEW =================
   Widget buildCardPreview() {
+    return GestureDetector(
+      onTap: () => setState(() => showBack = !showBack),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 600),
+        transitionBuilder: (child, animation) {
+          final rotate = Tween(begin: pi, end: 0.0).animate(animation);
+          return AnimatedBuilder(
+            animation: rotate,
+            child: child,
+            builder: (context, child) {
+              final isUnder = (ValueKey(showBack) != child!.key);
+              final value =
+                  isUnder ? min(rotate.value, pi / 2) : rotate.value;
+              return Transform(
+                transform: Matrix4.rotationY(value),
+                alignment: Alignment.center,
+                child: child,
+              );
+            },
+          );
+        },
+        child: showBack ? _buildBackCard() : _buildFrontCard(),
+      ),
+    );
+  }
+
+  Widget _buildFrontCard() {
     return Container(
-      width: double.infinity,
-      height: 200,
+      key: const ValueKey(true),
+      height: 210,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         gradient: const LinearGradient(
-          colors: [Colors.deepPurple, Colors.purpleAccent],
+          colors: [Color(0xFF141E30), Color(0xFF243B55)],
         ),
+        boxShadow: const [
+          BoxShadow(color: Colors.black45, blurRadius: 15),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(cardType, style: const TextStyle(color: Colors.white)),
+          Text(cardType, style: const TextStyle(color: Colors.white70)),
           const Spacer(),
-          Text(
-            maskCard(cardNumberPreview),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              letterSpacing: 2,
-            ),
-          ),
-          const SizedBox(height: 10),
+          Text(maskCard(cardNumberPreview),
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 22, letterSpacing: 3)),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -226,12 +260,42 @@ class _AddNewCardState extends State<AddNewCard> {
               Text(expiryPreview,
                   style: const TextStyle(color: Colors.white)),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
+  Widget _buildBackCard() {
+    return Container(
+      key: const ValueKey(false),
+      height: 210,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color: Colors.black87,
+      ),
+      child: Column(
+        children: [
+          Container(height: 40, color: Colors.black),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Container(
+              height: 40,
+              color: Colors.white,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                cvvController.text.isEmpty ? "•••" : cvvController.text,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ================= FORM =================
   Widget buildForm() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -244,18 +308,14 @@ class _AddNewCardState extends State<AddNewCard> {
         child: Column(
           children: [
 
-            /// CARD NUMBER
             TextFormField(
               controller: cardNumberController,
               keyboardType: TextInputType.number,
               validator: validateCardNumber,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: inputDecoration("Card Number", Icons.credit_card),
               onChanged: (value) {
                 String formatted = formatCardNumber(value);
-
                 cardNumberController.value =
                     cardNumberController.value.copyWith(
                   text: formatted,
@@ -272,7 +332,6 @@ class _AddNewCardState extends State<AddNewCard> {
 
             const SizedBox(height: 16),
 
-            /// NAME
             TextFormField(
               controller: cardNameController,
               validator: validateName,
@@ -294,11 +353,6 @@ class _AddNewCardState extends State<AddNewCard> {
                     validator: validateExpiry,
                     decoration:
                         inputDecoration("MM/YY", Icons.date_range),
-                    onChanged: (value) {
-                      setState(() {
-                        expiryPreview = value;
-                      });
-                    },
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -306,8 +360,27 @@ class _AddNewCardState extends State<AddNewCard> {
                   child: TextFormField(
                     controller: cvvController,
                     validator: validateCVV,
-                    obscureText: true,
-                    decoration: inputDecoration("CVV", Icons.lock),
+                    obscureText: isCVVHidden,
+                    onTap: () => setState(() => showBack = true),
+                    onEditingComplete: () =>
+                        setState(() => showBack = false),
+                    decoration: InputDecoration(
+                      labelText: "CVV",
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(isCVVHidden
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            isCVVHidden = !isCVVHidden;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -315,14 +388,16 @@ class _AddNewCardState extends State<AddNewCard> {
 
             const SizedBox(height: 30),
 
-            /// BUTTON
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
                 onPressed: submitCard,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: const Color.fromARGB(255, 91, 95, 100),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
                 child: const Text("Add Card"),
               ),
