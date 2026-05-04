@@ -41,142 +41,223 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dashboard"),
+        title: const Text("My Wallet"),
         centerTitle: true,
+        elevation: 0,
       ),
 
-      /// 🔥 DRAWER
-      drawer: Drawer(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              color: const Color.fromARGB(255, 254, 254, 254),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 30),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "Pengguna!",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  Text(
-                    "kelompok 2",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                ],
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+
+          /// 💳 CREDIT CARD UI
+          Container(
+            height: 200,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [Colors.black, Colors.grey.shade900]
+                    : [Colors.green.shade400, Colors.green.shade700],
               ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                )
+              ],
             ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "Balance",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "Rp 12.500.000",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Spacer(),
+                Text(
+                  "**** **** **** 1234",
+                  style: TextStyle(color: Colors.white, letterSpacing: 2),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  "Kelompok 2",
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
 
-            /// ✅ PROFILE (pakai CardExpiredScreen)
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profile'),
-              onTap: () => navigate(context, CardExpiredScreen()), // ❗ TANPA const
-            ),
+          const SizedBox(height: 20),
 
-            ListTile(
-              leading: const Icon(Icons.payment),
-              title: const Text('Processing'),
-              onTap: () =>
-                  navigate(context, const PaymentProcessingScreen()),
-            ),
+          /// ⚡ QUICK ACTION
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              quickAction(Icons.send, "Transfer", Colors.blue),
+              quickAction(Icons.qr_code, "Pay", Colors.orange),
+              quickAction(Icons.add, "Top Up", Colors.green),
+              quickAction(Icons.history, "History", Colors.purple),
+            ],
+          ),
 
-            ListTile(
-              leading: const Icon(Icons.check_circle),
-              title: const Text('Success'),
-              onTap: () =>
-                  navigate(context, const PaymentSuccessfulScreen()),
-            ),
+          const SizedBox(height: 25),
 
-            ListTile(
-              leading: const Icon(Icons.credit_card),
-              title: const Text('Add Card'),
-              onTap: () => navigate(context, const AddNewCard()),
-            ),
+          /// 🔥 MENU GRID
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            children: [
+              menuCard(
+                context,
+                icon: Icons.person,
+                title: "Profile",
+                color: Colors.purple,
+                onTap: () =>
+                    navigate(context, CardExpiredScreen()),
+              ),
+              menuCard(
+                context,
+                icon: Icons.payment,
+                title: "Processing",
+                color: Colors.orange,
+                onTap: () =>
+                    navigate(context, const PaymentProcessingScreen()),
+              ),
+              menuCard(
+                context,
+                icon: Icons.check_circle,
+                title: "Success",
+                color: Colors.green,
+                onTap: () =>
+                    navigate(context, const PaymentSuccessfulScreen()),
+              ),
+              menuCard(
+                context,
+                icon: Icons.credit_card,
+                title: "Add Card",
+                color: Colors.blue,
+                onTap: () =>
+                    navigate(context, const AddNewCard()),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 25),
+
+          /// 📊 RECENT TRANSACTION
+          const Text(
+            "Recent Transactions",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 10),
+
+          transactionItem("Netflix", "- Rp 150.000", Icons.play_circle),
+          transactionItem("Top Up", "+ Rp 500.000", Icons.add_circle),
+          transactionItem("Transfer", "- Rp 1.000.000", Icons.send),
+        ],
+      ),
+    );
+  }
+
+  /// ⚡ QUICK ACTION BUTTON
+  static Widget quickAction(IconData icon, String title, Color color) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 24,
+          backgroundColor: color.withOpacity(0.15),
+          child: Icon(icon, color: color),
+        ),
+        const SizedBox(height: 6),
+        Text(title, style: const TextStyle(fontSize: 12)),
+      ],
+    );
+  }
+
+  /// 🔥 MENU CARD
+  static Widget menuCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            if (!isDark)
+              const BoxShadow(
+                color: Colors.black12,
+                blurRadius: 10,
+                offset: Offset(0, 6),
+              )
           ],
         ),
-      ),
-
-      /// 🔥 BODY
-      body: Padding(
-        padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                "Welcome 👋",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            CircleAvatar(
+              radius: 26,
+              backgroundColor: color.withOpacity(0.15),
+              child: Icon(icon, color: color),
             ),
-
-            const SizedBox(height: 20),
-
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                children: [
-                  menuCard(
-                    context,
-                    icon: Icons.person,
-                    title: "Profile",
-                    color: Colors.purple,
-                    onTap: () =>
-                        navigate(context, CardExpiredScreen()), // ❗ TANPA const
-                  ),
-                  menuCard(
-                    context,
-                    icon: Icons.payment,
-                    title: "Processing",
-                    color: Colors.orange,
-                    onTap: () => navigate(
-                        context, const PaymentProcessingScreen()),
-                  ),
-                  menuCard(
-                    context,
-                    icon: Icons.check_circle,
-                    title: "Success",
-                    color: Colors.green,
-                    onTap: () => navigate(
-                        context, const PaymentSuccessfulScreen()),
-                  ),
-                  menuCard(
-                    context,
-                    icon: Icons.credit_card,
-                    title: "Add Card",
-                    color: const Color.fromARGB(255, 98, 175, 235),
-                    onTap: () =>
-                        navigate(context, const AddNewCard()),
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: 10),
+            Text(title,
+                style: const TextStyle(fontWeight: FontWeight.w600)),
           ],
         ),
       ),
     );
   }
 
-  static Widget menuCard(
+  /// 📊 TRANSACTION ITEM
+  static Widget transactionItem(
+      String title, String amount, IconData icon) {
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: Colors.grey.shade200,
+        child: Icon(icon, color: Colors.black54),
+      ),
+      title: Text(title),
+      trailing: Text(
+        amount,
+        style: TextStyle(
+          color: amount.contains("-") ? Colors.red : Colors.green,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+  Widget menuCard(
     BuildContext context, {
     required IconData icon,
     required String title,
@@ -215,4 +296,3 @@ class MyHomePage extends StatelessWidget {
       ),
     );
   }
-}
