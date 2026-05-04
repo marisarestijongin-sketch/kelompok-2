@@ -9,8 +9,22 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void toggleTheme() {
+    setState(() {
+      _themeMode =
+          _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +44,16 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      themeMode: ThemeMode.system,
-      home: const MyHomePage(),
+      themeMode: _themeMode,
+      home: MyHomePage(onToggleTheme: toggleTheme),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+  final VoidCallback onToggleTheme;
+
+  const MyHomePage({super.key, required this.onToggleTheme});
 
   void navigate(BuildContext context, Widget page) {
     Navigator.push(
@@ -46,15 +62,13 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  /// 🔥 DRAWER NAVIGATION
+  /// 🔥 DRAWER
   Drawer buildDrawer(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Drawer(
       child: Column(
         children: [
-
-          /// HEADER
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
@@ -74,14 +88,10 @@ class MyHomePage extends StatelessWidget {
                   child: Icon(Icons.person),
                 ),
                 SizedBox(height: 10),
-                Text(
-                  "Pengguna",
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-                Text(
-                  "Kelompok 2",
-                  style: TextStyle(color: Colors.white70),
-                ),
+                Text("Pengguna",
+                    style: TextStyle(color: Colors.white, fontSize: 18)),
+                Text("Kelompok 2",
+                    style: TextStyle(color: Colors.white70)),
               ],
             ),
           ),
@@ -89,8 +99,7 @@ class MyHomePage extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text("Profile"),
-            onTap: () =>
-                navigate(context, CardExpiredScreen()),
+            onTap: () => navigate(context, CardExpiredScreen()),
           ),
 
           ListTile(
@@ -110,8 +119,7 @@ class MyHomePage extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.credit_card),
             title: const Text("Add Card"),
-            onTap: () =>
-                navigate(context, const AddNewCard()),
+            onTap: () => navigate(context, const AddNewCard()),
           ),
         ],
       ),
@@ -123,11 +131,21 @@ class MyHomePage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      drawer: buildDrawer(context), // 🔥 SIDEBAR ADDED
+      drawer: buildDrawer(context),
 
       appBar: AppBar(
         title: const Text("My Wallet"),
         centerTitle: true,
+
+        /// 🌙 BUTTON DARK MODE
+        actions: [
+          IconButton(
+            icon: Icon(
+              isDark ? Icons.light_mode : Icons.dark_mode,
+            ),
+            onPressed: onToggleTheme,
+          )
+        ],
       ),
 
       body: ListView(
@@ -185,8 +203,7 @@ class MyHomePage extends StatelessWidget {
                 icon: Icons.person,
                 title: "Profile",
                 color: Colors.purple,
-                onTap: () =>
-                    navigate(context, CardExpiredScreen()),
+                onTap: () => navigate(context, CardExpiredScreen()),
               ),
               menuCard(
                 context,
@@ -232,7 +249,6 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  /// 🔥 MENU CARD
   static Widget menuCard(
     BuildContext context, {
     required IconData icon,
@@ -267,13 +283,10 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  /// 📊 TRANSACTION ITEM
   static Widget transactionItem(
       String title, String amount, IconData icon) {
     return ListTile(
-      leading: CircleAvatar(
-        child: Icon(icon),
-      ),
+      leading: CircleAvatar(child: Icon(icon)),
       title: Text(title),
       trailing: Text(
         amount,
