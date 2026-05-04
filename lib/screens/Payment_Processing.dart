@@ -1,6 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:template_credit_card/screens/payment_processing.dart';
+import '../services/api_services.dart';
+import '../models/api_model.dart';
 
 class PaymentProcessingScreen extends StatefulWidget {
   const PaymentProcessingScreen({super.key});
@@ -10,30 +12,52 @@ class PaymentProcessingScreen extends StatefulWidget {
       _PaymentProcessingScreenState();
 }
 
-class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
+class _PaymentProcessingScreenState
+    extends State<PaymentProcessingScreen> {
 
   @override
   void initState() {
     super.initState();
+    _processPayment(); // 🚀 langsung hit API
+  }
 
-    /// ⏳ Simulasi proses pembayaran (3 detik)
-    Timer(const Duration(seconds: 3), () {
+  /// 🔥 PROSES API
+  Future<void> _processPayment() async {
+    try {
+      final ApiModel result = await CreditCardService.getData();
+
       if (!mounted) return;
 
-      /// 🔁 Ganti ke halaman sukses / gagal
+      if (result.status.toLowerCase() == "success") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PaymentSuccessScreen(
+              title: result.title,
+            ),
+          ),
+        );
+      } else {
+        throw Exception(result.message);
+      }
+    } catch (e) {
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const PaymentSuccessScreen(),
+          builder: (_) => PaymentFailedScreen(
+            errorMessage: e.toString(),
+          ),
         ),
       );
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // ❌ disable tombol back
+      onWillPop: () async => false, // ❌ disable back
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -76,7 +100,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
 
                 const SizedBox(height: 30),
 
-                /// 🔄 Animated Progress
+                /// 🔄 Loading
                 const CircularProgressIndicator(),
 
                 const Spacer(),
@@ -88,39 +112,3 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
     );
   }
 }
-
-/// ✅ Dummy Success Screen
-class PaymentSuccessScreen extends StatelessWidget {
-  const PaymentSuccessScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 80),
-            const SizedBox(height: 20),
-            const Text(
-              "Payment Successful!",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Back"),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-const paymentProcessIllistration = ''' 
-// SVG kamu tetap
-''';
