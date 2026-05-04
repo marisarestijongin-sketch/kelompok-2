@@ -76,48 +76,80 @@ class _PaymentProcessingScreenState
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                const Spacer(),
-
-                /// 🔹 SVG (dummy)
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: SvgPicture.string(
-                      _dummySvg,
-                      fit: BoxFit.contain,
-                    ),
+          child: Stack(
+            children: [
+              /// ✅ TAMBAHAN: BACKGROUND GRADIENT
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFE8F5E9), Colors.white],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 30),
+              /// 🔵 CODING ASLI (TIDAK DIUBAH)
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Spacer(),
 
-                Text(
-                  "Processing Payment...",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .copyWith(fontWeight: FontWeight.bold),
+                    /// 🔹 SVG (dummy) + ANIMASI TAMBAHAN
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: TweenAnimationBuilder(
+                          tween: Tween<double>(begin: 0.9, end: 1),
+                          duration: const Duration(seconds: 1),
+                          curve: Curves.easeInOut,
+                          builder: (context, value, child) {
+                            return Transform.scale(
+                              scale: value,
+                              child: child,
+                            );
+                          },
+                          child: SvgPicture.string(
+                            _dummySvg,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    Text(
+                      "Processing Payment...",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    const Text(
+                      "Please wait while we confirm your transaction.\nDo not close this page.",
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    /// 🔄 TAMBAHAN STYLE LOADING
+                    const SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CircularProgressIndicator(strokeWidth: 4),
+                    ),
+
+                    const Spacer(),
+                  ],
                 ),
-
-                const SizedBox(height: 10),
-
-                const Text(
-                  "Please wait while we confirm your transaction.\nDo not close this page.",
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: 30),
-
-                const CircularProgressIndicator(),
-
-                const Spacer(),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -150,17 +182,37 @@ class PaymentSuccessScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 100),
-              const SizedBox(height: 20),
-              const Text(
-                "Payment Success 🎉",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
 
-              Text("Card Number: $number"),
-              Text("Name: $name"),
-              Text("Valid Thru: $valid"),
+              /// ✅ TAMBAHAN: CARD (TIDAK MENGHAPUS KODE LAMA)
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green, size: 100),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Payment Success 🎉",
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+
+                    Text("Card Number: $number"),
+                    Text("Name: $name"),
+                    Text("Valid Thru: $valid"),
+                  ],
+                ),
+              ),
 
               const SizedBox(height: 30),
 
@@ -196,17 +248,36 @@ class PaymentFailedScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.cancel, color: Colors.red, size: 100),
-              const SizedBox(height: 20),
-              const Text(
-                "Payment Failed ❌",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
 
-              Text(
-                errorMessage,
-                textAlign: TextAlign.center,
+              /// ✅ TAMBAHAN: CARD
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.cancel, color: Colors.red, size: 100),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Payment Failed ❌",
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+
+                    Text(
+                      errorMessage,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 30),
