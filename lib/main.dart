@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:template_credit_card/screens/Credit_Card_Expired.dart';
 
-// screens
 import 'screens/payment_processing.dart';
 import 'screens/payment_successful.dart';
 import 'screens/add_new_card.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -19,11 +17,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Payment App',
+
+      /// 🌞 LIGHT THEME
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 252, 244, 244),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: const Color(0xFFF8F9FB),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
+
+      /// 🌙 DARK THEME
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        useMaterial3: true,
+      ),
+
+      themeMode: ThemeMode.system,
       home: const MyHomePage(),
     );
   }
@@ -54,7 +63,7 @@ class MyHomePage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
 
-          /// 💳 CREDIT CARD UI
+          /// 💳 CARD
           Container(
             height: 200,
             padding: const EdgeInsets.all(20),
@@ -66,20 +75,19 @@ class MyHomePage extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                )
+                if (!isDark)
+                  const BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 12,
+                    offset: Offset(0, 6),
+                  )
               ],
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  "Balance",
-                  style: TextStyle(color: Colors.white70),
-                ),
+              children: [
+                Text("Balance",
+                    style: TextStyle(color: Colors.white70)),
                 SizedBox(height: 8),
                 Text(
                   "Rp 12.500.000",
@@ -90,35 +98,18 @@ class MyHomePage extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                Text(
-                  "**** **** **** 1234",
-                  style: TextStyle(color: Colors.white, letterSpacing: 2),
-                ),
+                Text("**** **** **** 1234",
+                    style: TextStyle(color: Colors.white)),
                 SizedBox(height: 6),
-                Text(
-                  "Kelompok 2",
-                  style: TextStyle(color: Colors.white70),
-                ),
+                Text("Kelompok 2",
+                    style: TextStyle(color: Colors.white70)),
               ],
             ),
           ),
 
-          const SizedBox(height: 20),
-
-          /// ⚡ QUICK ACTION
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              quickAction(Icons.send, "Transfer", Colors.blue),
-              quickAction(Icons.qr_code, "Pay", Colors.orange),
-              quickAction(Icons.add, "Top Up", Colors.green),
-              quickAction(Icons.history, "History", Colors.purple),
-            ],
-          ),
-
           const SizedBox(height: 25),
 
-          /// 🔥 MENU GRID
+          /// 📊 MENU GRID (SUDAH CLEAN)
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -131,8 +122,7 @@ class MyHomePage extends StatelessWidget {
                 icon: Icons.person,
                 title: "Profile",
                 color: Colors.purple,
-                onTap: () =>
-                    navigate(context, CardExpiredScreen()),
+                onTap: () => navigate(context, CardExpiredScreen()),
               ),
               menuCard(
                 context,
@@ -163,7 +153,7 @@ class MyHomePage extends StatelessWidget {
 
           const SizedBox(height: 25),
 
-          /// 📊 RECENT TRANSACTION
+          /// 📊 TRANSACTION
           const Text(
             "Recent Transactions",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -179,22 +169,7 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  /// ⚡ QUICK ACTION BUTTON
-  static Widget quickAction(IconData icon, String title, Color color) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: color.withOpacity(0.15),
-          child: Icon(icon, color: color),
-        ),
-        const SizedBox(height: 6),
-        Text(title, style: const TextStyle(fontSize: 12)),
-      ],
-    );
-  }
-
-  /// 🔥 MENU CARD
+  /// 🔥 MENU CARD (ONLY ONE VERSION - FIXED)
   static Widget menuCard(
     BuildContext context, {
     required IconData icon,
@@ -256,43 +231,3 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
-
-  Widget menuCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Ink(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            )
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: color.withOpacity(0.15),
-              child: Icon(icon, color: color),
-            ),
-            const SizedBox(height: 12),
-            Text(title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    );
-  }
