@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'services/api_services.dart';
-import 'models/api_model.dart';
+import 'package:template_credit_card/screens/Credit_Card_Expired.dart';
 
-// screens kamu
+// screens
 import 'screens/payment_processing.dart';
 import 'screens/payment_successful.dart';
 import 'screens/add_new_card.dart';
-import 'screens/credit_card_expired.dart';
+
+
 void main() {
   runApp(const MyApp());
 }
@@ -29,21 +29,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  late Future<ApiModel> data;
-
-  @override
-  void initState() {
-    super.initState();
-    data = ApiService.getData();
-  }
 
   void navigate(BuildContext context, Widget page) {
     Navigator.push(
@@ -89,10 +76,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
 
+            /// ✅ PROFILE (pakai CardExpiredScreen)
             ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () => Navigator.pop(context),
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () => navigate(context, CardExpiredScreen()), // ❗ TANPA const
             ),
 
             ListTile(
@@ -114,112 +102,82 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('Add Card'),
               onTap: () => navigate(context, const AddNewCard()),
             ),
-
-            ListTile(
-              leading: const Icon(Icons.warning),
-              title: const Text('Card Expired'),
-              onTap: () =>
-                  navigate(context, const CardExpiredScreen()),
-            ),
           ],
         ),
       ),
 
-      /// 🔥 BODY API
-      body: FutureBuilder<ApiModel>(
-        future: data,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (!snapshot.hasData) {
-            return const Center(child: Text("Data kosong"));
-          }
-
-          final api = snapshot.data!;
-
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// 🔥 TITLE DARI API
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    api.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+      /// 🔥 BODY
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                "Welcome 👋",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-
-                const SizedBox(height: 20),
-
-                const Text(
-                  "Quick Actions",
-                  style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-
-                const SizedBox(height: 16),
-
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    children: [
-                      menuCard(
-                        icon: Icons.payment,
-                        title: "Processing",
-                        color: Colors.orange,
-                        onTap: () => navigate(
-                            context,
-                            const PaymentProcessingScreen()),
-                      ),
-                      menuCard(
-                        icon: Icons.check_circle,
-                        title: "Success",
-                        color: Colors.green,
-                        onTap: () => navigate(
-                            context,
-                            const PaymentSuccessfulScreen()),
-                      ),
-                      menuCard(
-                        icon: Icons.credit_card,
-                        title: "Add Card",
-                        color: Colors.blue,
-                        onTap: () =>
-                            navigate(context, const AddNewCard()),
-                      ),
-                      menuCard(
-                        icon: Icons.warning,
-                        title: "Expired",
-                        color: Colors.red,
-                        onTap: () => navigate(
-                            context,
-                            const CardExpiredScreen()),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          );
-        },
+
+            const SizedBox(height: 20),
+
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                children: [
+                  menuCard(
+                    context,
+                    icon: Icons.person,
+                    title: "Profile",
+                    color: Colors.purple,
+                    onTap: () =>
+                        navigate(context, CardExpiredScreen()), // ❗ TANPA const
+                  ),
+                  menuCard(
+                    context,
+                    icon: Icons.payment,
+                    title: "Processing",
+                    color: Colors.orange,
+                    onTap: () => navigate(
+                        context, const PaymentProcessingScreen()),
+                  ),
+                  menuCard(
+                    context,
+                    icon: Icons.check_circle,
+                    title: "Success",
+                    color: Colors.green,
+                    onTap: () => navigate(
+                        context, const PaymentSuccessfulScreen()),
+                  ),
+                  menuCard(
+                    context,
+                    icon: Icons.credit_card,
+                    title: "Add Card",
+                    color: Colors.blue,
+                    onTap: () =>
+                        navigate(context, const AddNewCard()),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget menuCard({
+  static Widget menuCard(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required Color color,
