@@ -18,14 +18,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Payment App',
 
-      /// 🌞 LIGHT THEME
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF8F9FB),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
 
-      /// 🌙 DARK THEME
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF121212),
@@ -48,15 +46,88 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  /// 🔥 DRAWER NAVIGATION
+  Drawer buildDrawer(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Drawer(
+      child: Column(
+        children: [
+
+          /// HEADER
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [Colors.green.shade800, Colors.green.shade900]
+                    : [Colors.green.shade400, Colors.green.shade600],
+              ),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Pengguna",
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+                Text(
+                  "Kelompok 2",
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text("Profile"),
+            onTap: () =>
+                navigate(context, CardExpiredScreen()),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.payment),
+            title: const Text("Processing"),
+            onTap: () =>
+                navigate(context, const PaymentProcessingScreen()),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.check_circle),
+            title: const Text("Success"),
+            onTap: () =>
+                navigate(context, const PaymentSuccessfulScreen()),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.credit_card),
+            title: const Text("Add Card"),
+            onTap: () =>
+                navigate(context, const AddNewCard()),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      drawer: buildDrawer(context), // 🔥 SIDEBAR ADDED
+
       appBar: AppBar(
         title: const Text("My Wallet"),
         centerTitle: true,
-        elevation: 0,
       ),
 
       body: ListView(
@@ -74,14 +145,6 @@ class MyHomePage extends StatelessWidget {
                     : [Colors.green.shade400, Colors.green.shade700],
               ),
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                if (!isDark)
-                  const BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 12,
-                    offset: Offset(0, 6),
-                  )
-              ],
             ),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,7 +172,7 @@ class MyHomePage extends StatelessWidget {
 
           const SizedBox(height: 25),
 
-          /// 📊 MENU GRID (SUDAH CLEAN)
+          /// 📊 GRID MENU
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -122,7 +185,8 @@ class MyHomePage extends StatelessWidget {
                 icon: Icons.person,
                 title: "Profile",
                 color: Colors.purple,
-                onTap: () => navigate(context, CardExpiredScreen()),
+                onTap: () =>
+                    navigate(context, CardExpiredScreen()),
               ),
               menuCard(
                 context,
@@ -153,7 +217,6 @@ class MyHomePage extends StatelessWidget {
 
           const SizedBox(height: 25),
 
-          /// 📊 TRANSACTION
           const Text(
             "Recent Transactions",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -169,7 +232,7 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  /// 🔥 MENU CARD (ONLY ONE VERSION - FIXED)
+  /// 🔥 MENU CARD
   static Widget menuCard(
     BuildContext context, {
     required IconData icon,
@@ -186,14 +249,6 @@ class MyHomePage extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            if (!isDark)
-              const BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, 6),
-              )
-          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -217,8 +272,7 @@ class MyHomePage extends StatelessWidget {
       String title, String amount, IconData icon) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: Colors.grey.shade200,
-        child: Icon(icon, color: Colors.black54),
+        child: Icon(icon),
       ),
       title: Text(title),
       trailing: Text(
