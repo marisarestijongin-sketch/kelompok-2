@@ -126,7 +126,7 @@ class _AddNewCardState extends State<AddNewCard> {
             children: const [
               Icon(Icons.check_circle, color: Colors.green, size: 80),
               SizedBox(height: 10),
-              Text("Card Added Successfully 🎉"),
+              Text("Credit card fetched successfully"),
             ],
           ),
         ),
