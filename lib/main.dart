@@ -6,7 +6,6 @@ import 'screens/payment_processing.dart';
 import 'screens/payment_successful.dart';
 import 'screens/add_new_card.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -21,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Payment App',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.grey[100],
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink), // 🌸 pink theme
         useMaterial3: true,
       ),
       home: const MyHomePage(),
@@ -54,7 +53,7 @@ class MyHomePage extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
-              color: Colors.deepPurple,
+              color: Colors.pink, // 🌸 ubah ke pink
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -76,11 +75,10 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
 
-            /// ✅ PROFILE (pakai CardExpiredScreen)
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Profile'),
-              onTap: () => navigate(context, CardExpiredScreen()), // ❗ TANPA const
+              onTap: () => navigate(context, CardExpiredScreen()),
             ),
 
             ListTile(
@@ -97,8 +95,30 @@ class MyHomePage extends StatelessWidget {
                   navigate(context, const PaymentSuccessfulScreen()),
             ),
 
+            /// 🌸 ADD CARD (UPDATED ICON)
             ListTile(
-              leading: const Icon(Icons.credit_card),
+              leading: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Icon(Icons.credit_card, color: Colors.pink),
+                  Positioned(
+                    right: -2,
+                    top: -2,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        color: Colors.pink,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        size: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                ],
+              ),
               title: const Text('Add Card'),
               onTap: () => navigate(context, const AddNewCard()),
             ),
@@ -141,7 +161,7 @@ class MyHomePage extends StatelessWidget {
                     title: "Profile",
                     color: Colors.purple,
                     onTap: () =>
-                        navigate(context, CardExpiredScreen()), // ❗ TANPA const
+                        navigate(context, CardExpiredScreen()),
                   ),
                   menuCard(
                     context,
@@ -159,13 +179,65 @@ class MyHomePage extends StatelessWidget {
                     onTap: () => navigate(
                         context, const PaymentSuccessfulScreen()),
                   ),
-                  menuCard(
-                    context,
-                    icon: Icons.credit_card,
-                    title: "Add Card",
-                    color: Colors.blue,
+
+                  /// 🌸 ADD CARD GRID (UPDATED)
+                  InkWell(
                     onTap: () =>
                         navigate(context, const AddNewCard()),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: 28,
+                                backgroundColor:
+                                    Colors.pink.withOpacity(0.15),
+                                child: const Icon(
+                                  Icons.credit_card,
+                                  color: Colors.pink,
+                                ),
+                              ),
+                              Positioned(
+                                right: 18,
+                                top: 18,
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.pink,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.add,
+                                    size: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            "Add Card",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
