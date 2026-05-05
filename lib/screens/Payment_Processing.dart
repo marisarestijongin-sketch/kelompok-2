@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 
 /// ===============================
-/// 🔵 MAIN SCREEN (PROCESSING) api kredit card
+/// 🔵 MAIN SCREEN (PROCESSING)
 /// ===============================
 class PaymentProcessingScreen extends StatefulWidget {
   const PaymentProcessingScreen({super.key});
@@ -22,7 +22,6 @@ class _PaymentProcessingScreenState
     _processPayment();
   }
 
-  /// 🔥 HIT API LANGSUNG
   Future<void> _processPayment() async {
     try {
       final response = await http.get(
@@ -74,49 +73,78 @@ class _PaymentProcessingScreenState
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                const Spacer(),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFE8F5E9), Colors.white],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const Spacer(),
 
-                /// 🔹 SVG (dummy)
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: SvgPicture.string(
-                      _dummySvg,
-                      fit: BoxFit.contain,
+                  /// 🔵 ANIMASI MODERN
+                  TweenAnimationBuilder(
+                    tween: Tween<double>(begin: 0, end: 1),
+                    duration: const Duration(milliseconds: 800),
+                    builder: (context, value, child) {
+                      return Opacity(
+                        opacity: value,
+                        child: Transform.scale(
+                          scale: 0.8 + (0.2 * value),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.65,
+                      child: SvgPicture.string(_dummySvg),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 30),
+                  const SizedBox(height: 40),
 
-                Text(
-                  "Processing Payment...",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
+                  Text(
+                    "Processing Payment",
+                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                  ),
 
-                const SizedBox(height: 10),
+                  const SizedBox(height: 12),
 
-                const Text(
-                  "Please wait while we confirm your transaction.\nDo not close this page.",
-                  textAlign: TextAlign.center,
-                ),
+                  Text(
+                    "We are securely confirming your transaction.\nThis won’t take long.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      height: 1.5,
+                    ),
+                  ),
 
-                const SizedBox(height: 30),
+                  const SizedBox(height: 40),
 
-                const CircularProgressIndicator(),
+                  /// 🔄 LOADING
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 5,
+                      valueColor:
+                          AlwaysStoppedAnimation(Colors.green.shade600),
+                      backgroundColor: Colors.green.shade100,
+                    ),
+                  ),
 
-                const Spacer(),
-              ],
+                  const Spacer(),
+                ],
+              ),
             ),
           ),
         ),
@@ -140,6 +168,25 @@ class PaymentSuccessScreen extends StatelessWidget {
     required this.valid,
   });
 
+  Widget _infoItem(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        children: [
+          Text(title, style: const TextStyle(color: Colors.white70)),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,25 +197,59 @@ class PaymentSuccessScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 100),
-              const SizedBox(height: 20),
-              const Text(
-                "Payment Success 🎉",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.green.shade400, Colors.green.shade600],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.shade200,
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.check_circle,
+                        color: Colors.white, size: 90),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Payment Successful",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _infoItem("Card Number", number),
+                    _infoItem("Name", name),
+                    _infoItem("Valid Thru", valid),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
-
-              Text("Card Number: $number"),
-              Text("Name: $name"),
-              Text("Valid Thru: $valid"),
 
               const SizedBox(height: 30),
 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Back"),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Done"),
+                ),
               )
             ],
           ),
@@ -196,26 +277,55 @@ class PaymentFailedScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.cancel, color: Colors.red, size: 100),
-              const SizedBox(height: 20),
-              const Text(
-                "Payment Failed ❌",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-
-              Text(
-                errorMessage,
-                textAlign: TextAlign.center,
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 12)
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Icon(Icons.error_outline,
+                        color: Colors.red.shade400, size: 90),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Payment Failed",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      errorMessage,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 30),
 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Try Again"),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Try Again"),
+                ),
               )
             ],
           ),
@@ -226,7 +336,7 @@ class PaymentFailedScreen extends StatelessWidget {
 }
 
 /// ===============================
-/// 🔹 SVG DUMMY (BIAR GA ERROR)
+/// 🔹 SVG DUMMY
 /// ===============================
 const String _dummySvg = '''
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">

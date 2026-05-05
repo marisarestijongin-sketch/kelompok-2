@@ -25,7 +25,6 @@ class _AddNewCardState extends State<AddNewCard> {
 
   bool isLoading = true;
   bool isError = false;
-  bool isCardFlipped = false;
 
   @override
   void initState() {
@@ -116,7 +115,7 @@ class _AddNewCardState extends State<AddNewCard> {
   void submitCard() {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Credit card fetched successfully")),
+        const SnackBar(content: Text("Card Added Successfully")),
       );
     }
   }
@@ -142,7 +141,6 @@ class _AddNewCardState extends State<AddNewCard> {
 
   /// ================= CARD TYPE =================
   String detectCardType(String number) {
-    number = number.replaceAll(" ", "");
     if (number.startsWith("4")) return "VISA";
     if (number.startsWith("5")) return "MASTERCARD";
     return "CARD";
@@ -152,7 +150,7 @@ class _AddNewCardState extends State<AddNewCard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF0F5), // soft pink background
+      backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -180,8 +178,13 @@ class _AddNewCardState extends State<AddNewCard> {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
+
+                        /// CARD PREVIEW
                         buildCardPreview(),
+
                         const SizedBox(height: 30),
+
+                        /// FORM
                         buildForm(),
                       ],
                     ),
@@ -190,91 +193,45 @@ class _AddNewCardState extends State<AddNewCard> {
     );
   }
 
-  /// ================= CARD =================
   Widget buildCardPreview() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isCardFlipped = !isCardFlipped;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        width: double.infinity,
-        height: 200,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            colors: isCardFlipped
-                ? [Colors.black87, Colors.grey]
-                : [Color(0xFFFF9AA2), Color(0xFFFFC1CC)], // pink soft
-          ),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10,
-              offset: Offset(0, 5),
-            )
-          ],
+    return Container(
+      width: double.infinity,
+      height: 200,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          colors: [Colors.deepPurple, Colors.purpleAccent],
         ),
-        child: isCardFlipped ? buildBackCard() : buildFrontCard(),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(cardType, style: const TextStyle(color: Colors.white)),
+          const Spacer(),
+          Text(
+            maskCard(cardNumberPreview),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(cardNamePreview,
+                  style: const TextStyle(color: Colors.white)),
+              Text(expiryPreview,
+                  style: const TextStyle(color: Colors.white)),
+            ],
+          )
+        ],
       ),
     );
   }
 
-  Widget buildFrontCard() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(cardType,
-            style: const TextStyle(color: Colors.white, fontSize: 16)),
-        const Spacer(),
-        Text(
-          maskCard(cardNumberPreview),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            letterSpacing: 2,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(cardNamePreview,
-                style: const TextStyle(color: Colors.white)),
-            Text(expiryPreview,
-                style: const TextStyle(color: Colors.white)),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget buildBackCard() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(height: 40, color: Colors.black),
-        const SizedBox(height: 20),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            color: Colors.white,
-            child: Text(
-              cvvController.text.isEmpty ? "XXX" : cvvController.text,
-              style: const TextStyle(letterSpacing: 2),
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  /// ================= FORM =================
   Widget buildForm() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -287,6 +244,7 @@ class _AddNewCardState extends State<AddNewCard> {
         child: Column(
           children: [
 
+            /// CARD NUMBER
             TextFormField(
               controller: cardNumberController,
               keyboardType: TextInputType.number,
@@ -314,6 +272,7 @@ class _AddNewCardState extends State<AddNewCard> {
 
             const SizedBox(height: 16),
 
+            /// NAME
             TextFormField(
               controller: cardNameController,
               validator: validateName,
@@ -333,20 +292,11 @@ class _AddNewCardState extends State<AddNewCard> {
                   child: TextFormField(
                     controller: expiryController,
                     validator: validateExpiry,
-                    keyboardType: TextInputType.number,
-                    decoration: inputDecoration("MM/YY", Icons.date_range),
+                    decoration:
+                        inputDecoration("MM/YY", Icons.date_range),
                     onChanged: (value) {
-                      if (value.length == 2 && !value.contains("/")) {
-                        expiryController.text = "$value/";
-                        expiryController.selection =
-                            TextSelection.fromPosition(
-                          TextPosition(
-                              offset: expiryController.text.length),
-                        );
-                      }
-
                       setState(() {
-                        expiryPreview = expiryController.text;
+                        expiryPreview = value;
                       });
                     },
                   ),
@@ -358,14 +308,6 @@ class _AddNewCardState extends State<AddNewCard> {
                     validator: validateCVV,
                     obscureText: true,
                     decoration: inputDecoration("CVV", Icons.lock),
-                    onTap: () {
-                      setState(() {
-                        isCardFlipped = true;
-                      });
-                    },
-                    onChanged: (value) {
-                      setState(() {});
-                    },
                   ),
                 ),
               ],
@@ -373,30 +315,16 @@ class _AddNewCardState extends State<AddNewCard> {
 
             const SizedBox(height: 30),
 
+            /// BUTTON
             SizedBox(
               width: double.infinity,
               height: 55,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF9AA2), Color(0xFFFFC1CC)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
+              child: ElevatedButton(
+                onPressed: submitCard,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
                 ),
-                child: ElevatedButton(
-                  onPressed: submitCard,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                  ),
-                  child: const Text(
-                    "Add Card",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
+                child: const Text("Add Card"),
               ),
             ),
           ],
@@ -405,17 +333,14 @@ class _AddNewCardState extends State<AddNewCard> {
     );
   }
 
-  /// ================= INPUT STYLE =================
   InputDecoration inputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Color(0xFFFF9AA2)),
-      filled: true,
-      fillColor: Colors.pink.shade50,
+      prefixIcon: Icon(icon),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
       ),
     );
   }
 }
+ 
