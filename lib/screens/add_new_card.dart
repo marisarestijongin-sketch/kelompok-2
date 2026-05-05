@@ -124,7 +124,7 @@ class _AddNewCardState extends State<AddNewCard> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: const [
-              Icon(Icons.check_circle, color: Colors.green, size: 80),
+              Icon(Icons.check_circle, color: Color.fromARGB(255, 204, 53, 111), size: 80),
               SizedBox(height: 10),
               Text("Credit card fetched successfully"),
             ],
