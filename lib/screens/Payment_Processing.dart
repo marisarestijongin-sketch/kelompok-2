@@ -123,7 +123,7 @@ class _PaymentProcessingScreenState
                     "We are securely confirming your transaction.\nThis won’t take long.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: const Color.fromARGB(255, 233, 24, 181),
                       height: 1.5,
                     ),
                   ),
@@ -137,8 +137,8 @@ class _PaymentProcessingScreenState
                     child: CircularProgressIndicator(
                       strokeWidth: 5,
                       valueColor:
-                          AlwaysStoppedAnimation(Colors.green.shade600),
-                      backgroundColor: Colors.green.shade100,
+                          AlwaysStoppedAnimation(const Color.fromARGB(255, 221, 34, 150)),
+                      backgroundColor: const Color.fromARGB(255, 211, 26, 118),
                     ),
                   ),
 
@@ -190,7 +190,7 @@ class PaymentSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade50,
+      backgroundColor: const Color.fromARGB(255, 133, 14, 212),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -202,12 +202,12 @@ class PaymentSuccessScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.green.shade400, Colors.green.shade600],
+                    colors: [const Color.fromARGB(255, 110, 32, 212), const Color.fromARGB(255, 104, 70, 230)],
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.green.shade200,
+                      color: const Color.fromARGB(255, 38, 80, 194),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     )
